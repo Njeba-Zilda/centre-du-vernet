@@ -27,8 +27,17 @@ function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <header className="app-header">
       <div className="brand">
-        <div className="brand-mark" aria-hidden="true">
-          CV
+        <div className="brand-logos" aria-hidden="true">
+          <img
+            className="brand-logo"
+            src="/media/logos/logo-centre-du-vernet-1.jpeg"
+            alt=""
+          />
+          <img
+            className="brand-logo"
+            src="/media/logos/logo-amincissement-centre-du-vernet-methode-laurand.jpg"
+            alt=""
+          />
         </div>
         <div>
           <div className="brand-title">Centre du Vernet</div>
@@ -37,6 +46,7 @@ function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
       </div>
       <nav className="nav">
         <Link to="/">Accueil</Link>
+        <Link to="/vitrine">Vitrine</Link>
         <Link to="/login">{isLoggedIn ? 'Dashboard' : 'Connexion'}</Link>
       </nav>
     </header>
@@ -86,6 +96,48 @@ function Home() {
           <h2>“Intelligent” (règles)</h2>
           <p>Alertes: stagnation, progression anormale, absence d’activité.</p>
         </div>
+      </section>
+    </main>
+  )
+}
+
+function Vitrine() {
+  const rooms = [
+    { name: "Salle d'accueil", file: "salle-d'acceuil.jpeg" },
+    { name: 'Salle de consultation', file: 'salle-de-consultation.jpeg' },
+    { name: 'Salle de fitness', file: 'salle-de-fitness.jpeg' },
+    { name: 'Aquagym', file: "salle-d'aquagym-1.jpeg" },
+    { name: 'Electrostimulation & ultrasons', file: "salle-d'electrostimulation-et-ultrasons-1.jpeg" },
+    { name: 'Massage & hammam', file: "salle-de-massage-hammam-1.jpeg" },
+    { name: 'Spa jet', file: 'salle-du-spa-jet-1.jpeg' },
+    { name: 'Perfect body', file: 'salle-du-perfect-body.jpeg' },
+  ]
+
+  return (
+    <main className="container">
+      <div className="panel">
+        <h1>Vitrine — Centre du Vernet</h1>
+        <p className="muted">
+          Avant inscription, les visiteurs peuvent découvrir les salles et les
+          services.
+        </p>
+      </div>
+
+      <section className="gallery">
+        {rooms.map((r) => (
+          <article key={r.file} className="gallery-card">
+            <img
+              className="gallery-img"
+              src={`/media/salles/${encodeURIComponent(r.file)}`}
+              alt={r.name}
+              loading="lazy"
+            />
+            <div className="gallery-meta">
+              <div className="gallery-title">{r.name}</div>
+              <div className="gallery-sub">Douala — ouvert 07:00–17:00</div>
+            </div>
+          </article>
+        ))}
       </section>
     </main>
   )
@@ -221,6 +273,7 @@ export default function App() {
       <Header isLoggedIn={!!auth.accessToken} />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/vitrine" element={<Vitrine />} />
         <Route path="/login" element={<Login onPending={setPendingToken} />} />
         <Route
           path="/verify-2fa"
