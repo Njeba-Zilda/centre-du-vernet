@@ -30,3 +30,15 @@ export async function apiPost<T>(path: string, body: unknown, token?: string) {
   return data as T
 }
 
+export async function apiGet<T>(path: string, token?: string) {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'GET',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  })
+  const data = await parseJsonSafe(res)
+  if (!res.ok) throw data as ApiError
+  return data as T
+}
+

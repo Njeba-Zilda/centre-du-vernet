@@ -1,6 +1,6 @@
 import { Link, Route, Routes, useNavigate } from 'react-router-dom'
 import { useMemo, useState } from 'react'
-import { apiPost } from './lib/api'
+import { apiGet, apiPost } from './lib/api'
 
 type LoginResponse = { needs2fa: boolean; pendingToken: string }
 type TokenResponse = { accessToken: string }
@@ -47,6 +47,8 @@ function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
       <nav className="nav">
         <Link to="/">Accueil</Link>
         <Link to="/vitrine">Vitrine</Link>
+        <Link to="/notifications">Notifications</Link>
+        <Link to="/catalogue">Catalogue</Link>
         <Link to="/login">{isLoggedIn ? 'Dashboard' : 'Connexion'}</Link>
       </nav>
     </header>
@@ -264,6 +266,140 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   )
 }
 
+function Notifications({ accessToken }: { accessToken: string | null }) {
+  const [items, setItems] = useState<any[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  return (
+    <main className="container">
+      <div className="panel">
+        <div className="panel-row">
+          <h1>Notifications</h1>
+          <button
+            className="btn"
+            disabled={!accessToken}
+            onClick={async () => {
+              setError(null)
+              try {
+                const res = await apiGet<any>('/api/notifications?size=30', accessToken ?? undefined)
+                setItems(res.items ?? [])
+              } catch (e: any) {
+                setError(e?.error ?? 'Erreur')
+              }
+            }}
+          >
+            Rafraîchir
+          </button>
+        </div>
+        {error ? <div className="error">{error}</div> : null}
+        {!accessToken ? (
+          <p className="muted">Connecte-toi pour voir tes notifications.</p>
+        ) : (
+          <div className="list">
+            {items.map((n) => (
+              <div key={n.id} className="list-item">
+                <div className="list-title">{n.title}</div>
+                <div className="list-sub">{n.body}</div>
+                <div className="list-meta">{n.createdAt}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  )
+}
+
+function Catalog({ accessToken }: { accessToken: string | null }) {
+  const [items, setItems] = useState<any[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null)
+
+  return (
+    <main className="container">
+      <div className="panel">
+        <div className="panel-row">
+          <h1>Catalogue (documents)</h1>
+          <button
+            className="btn"
+            disabled={!accessToken}
+            onClick={async () => {
+              setError(null)
+              try {
+                const res = await apiGet<any>('/api/catalog?size=30', accessToken ?? undefined)
+                setItems(res.items ?? [])
+              } catch (e: any) {
+                setError(e?.error ?? 'Erreur')
+              }
+            }}
+          >
+            Charger
+          </button>
+        </div>
+
+        {!accessToken ? (
+          <p className="muted">Connecte-toi pour accéder au catalogue.</p>
+        ) : (
+          <>
+            <div className="upload">
+              <input
+                type="file"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              />
+              <button
+                className="btn primary"
+                disabled={!file}
+                onClick={async () => {
+                  if (!file || !accessToken) return
+                  setError(null)
+                  try {
+                    const form = new FormData()
+                    form.append('file', file)
+                    const res = await fetch('http://localhost:8080/api/catalog/upload', {
+                      method: 'POST',
+                      headers: { Authorization: `Bearer ${accessToken}` },
+                      body: form,
+                    })
+                    if (!res.ok) {
+                      const t = await res.text()
+                      throw { error: t || 'UPLOAD_FAILED' }
+                    }
+                    setFile(null)
+                  } catch (e: any) {
+                    setError(e?.error ?? 'Erreur upload')
+                  }
+                }}
+              >
+                Upload
+              </button>
+            </div>
+
+            {error ? <div className="error">{error}</div> : null}
+
+            <div className="list">
+              {items.map((a) => (
+                <div key={a.id} className="list-item">
+                  <div className="list-title">{a.originalFilename}</div>
+                  <div className="list-sub">{a.contentType}</div>
+                  <div className="list-meta">{a.createdAt}</div>
+                  <a
+                    className="btn"
+                    href={`http://localhost:8080/api/catalog/${a.id}/download`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Télécharger
+                  </a>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </main>
+  )
+}
+
 export default function App() {
   const auth = useAuth()
   const [pendingToken, setPendingToken] = useState<string | null>(null)
@@ -274,6 +410,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/vitrine" element={<Vitrine />} />
+        <Route path="/notifications" element={<Notifications accessToken={auth.accessToken} />} />
+        <Route path="/catalogue" element={<Catalog accessToken={auth.accessToken} />} />
         <Route path="/login" element={<Login onPending={setPendingToken} />} />
         <Route
           path="/verify-2fa"
