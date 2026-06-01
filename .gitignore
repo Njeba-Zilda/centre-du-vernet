@@ -1,1 +1,17 @@
 backend.zip
+backend-out.txt
+backend-err.txt
+frontend-out.txt
+
+# Ne pas committer les fichiers de build
+backend/build/
+backend/.gradle/
+frontend/node_modules/
+frontend/dist/
+
+# Ne pas committer les fichiers de stockage locaux
+backend/storage/
+
+# Variables d'environnement locales
+frontend/.env.local
+backend/src/main/resources/application-local.properties

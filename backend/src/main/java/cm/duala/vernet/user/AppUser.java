@@ -35,6 +35,23 @@ public class AppUser {
 	@Column(length = 128)
 	private String totpSecret;
 
+	@Column(length = 100)
+	private String firstName;
+
+	@Column(length = 100)
+	private String lastName;
+
+	@Column(length = 10)
+	private String gender;
+
+	@Column(length = 20)
+	private String phone;
+
+	private java.time.LocalDate dateOfBirth;
+
+	private Double targetWeightKg;
+	private java.time.LocalDate targetDate;
+
 	private Instant createdAt = Instant.now();
 }
 

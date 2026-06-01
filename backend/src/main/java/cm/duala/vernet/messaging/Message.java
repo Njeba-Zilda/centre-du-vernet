@@ -22,12 +22,14 @@ public class Message {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private AppUser sender;
 
-	@Column(nullable = false, length = 4000)
+	@Column(length = 4000)
 	private String text;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private CatalogAsset attachment; // optional: document/photo/pdf from catalog
 
 	private Instant createdAt = Instant.now();
+	private Instant editedAt;
+	private Instant readAt;
 }
 

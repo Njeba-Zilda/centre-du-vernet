@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 	Page<Notification> findByUserOrderByCreatedAtDesc(AppUser user, Pageable pageable);
-	long countByUserAndReadIsFalse(AppUser user);
+	Page<Notification> findByUserAndCreatedAtAfterOrderByCreatedAtDesc(AppUser user, java.time.Instant since, Pageable pageable);
+	long countByUserAndReadIsFalseAndCreatedAtAfter(AppUser user, java.time.Instant since);
+	void deleteByUser(AppUser user);
+	void deleteByCreatedAtBefore(java.time.Instant cutoff);
 }
 

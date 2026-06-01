@@ -28,7 +28,13 @@ public class CatalogAsset {
 	private long sizeBytes;
 
 	@Column(nullable = false, length = 64)
-	private String storageKey; // random id used as filename
+	private String storageKey;
+
+	@Column(length = 60)
+	private String category; // ex: "Régimes", "Exercices", "Bilans"
+
+	@ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+	private cm.duala.vernet.user.AppUser sharedWithClient; // partage direct vers 1 client
 
 	private Instant createdAt = Instant.now();
 }

@@ -4,6 +4,7 @@ export const API_BASE_URL =
 export type ApiError = {
   error?: string
   message?: string
+  status?: number
 }
 
 async function parseJsonSafe(res: Response) {
@@ -16,6 +17,11 @@ async function parseJsonSafe(res: Response) {
   }
 }
 
+function handleUnauthorized() {
+  localStorage.removeItem('vernet_access_token')
+  window.location.href = '/login'
+}
+
 export async function apiPost<T>(path: string, body: unknown, token?: string) {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method: 'POST',
@@ -25,8 +31,24 @@ export async function apiPost<T>(path: string, body: unknown, token?: string) {
     },
     body: JSON.stringify(body),
   })
+  if (res.status === 401 && token) { handleUnauthorized(); throw { error: 'SESSION_EXPIRED' } }
   const data = await parseJsonSafe(res)
-  if (!res.ok) throw data as ApiError
+  if (!res.ok) throw (typeof data === 'object' && data !== null ? data : { error: data ?? `HTTP_${res.status}` }) as ApiError
+  return data as T
+}
+
+export async function apiPut<T>(path: string, body: unknown, token?: string) {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (res.status === 401 && token) { handleUnauthorized(); throw { error: 'SESSION_EXPIRED' } }
+  const data = await parseJsonSafe(res)
+  if (!res.ok) throw (typeof data === 'object' && data !== null ? data : { error: data ?? `HTTP_${res.status}` }) as ApiError
   return data as T
 }
 
@@ -37,8 +59,8 @@ export async function apiGet<T>(path: string, token?: string) {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   })
+  if (res.status === 401 && token) { handleUnauthorized(); throw { error: 'SESSION_EXPIRED' } }
   const data = await parseJsonSafe(res)
-  if (!res.ok) throw data as ApiError
+  if (!res.ok) throw (typeof data === 'object' && data !== null ? data : { error: data ?? `HTTP_${res.status}` }) as ApiError
   return data as T
 }
-

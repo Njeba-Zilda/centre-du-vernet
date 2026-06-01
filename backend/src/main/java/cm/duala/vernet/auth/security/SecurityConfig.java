@@ -45,9 +45,12 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
+	CorsConfigurationSource corsConfigurationSource(
+		@Value("${app.cors.allowed-origin:http://localhost:5173}") String allowedOrigin
+	) {
 		CorsConfiguration cfg = new CorsConfiguration();
-		cfg.setAllowedOrigins(List.of("http://localhost:5173"));
+		// Accepter localhost en dev ET l'URL de production
+		cfg.setAllowedOrigins(List.of("http://localhost:5173", allowedOrigin));
 		cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 		cfg.setAllowCredentials(false);
