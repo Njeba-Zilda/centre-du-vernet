@@ -279,8 +279,8 @@ const SERVICES = [
   { title: 'Mr Ngouma & Ultrasons',  desc: 'Technologies de pointe pour affiner et raffermir en profondeur.' },
   { title: 'Piscine & Hammam',                desc: 'Soins drainants et relaxants pour éliminer toxines et stress.' },
   { title: 'Piscine guidé',                   desc: 'Programmes cardio personnalisés encadrés par nos coachs.' },
-  { title: 'Spa Jet & Perfect Body',          desc: 'Hydromassage ciblé pour sculpter et tonifier la silhouette.' },
-  { title: 'Consultation diététique',         desc: 'Rééquilibrage alimentaire progressif avec notre nutritionniste.' },
+  { title: 'Zilda',          desc: 'Hydromassage ciblé pour sculpter et tonifier la silhouette.' },
+  { title: 'bonjour diététique',         desc: 'Rééquilibrage alimentaire progressif avec notre nutritionniste.' },
   { title: 'Cryolipolyse & Pressothérapie',  desc: 'Technologie Sonarê Japonais pour éliminer les graisses localisées sans chirurgie.' },
   { title: 'Jacuzzi & Relaxation',            desc: 'Balnéothérapie et sièges de relaxation pour une récupération optimale.' },
 ]
