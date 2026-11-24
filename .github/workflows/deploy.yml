@@ -1,0 +1,23 @@
+name: Deploy Frontend on Vagrant VM
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Construire l'image Docker en local
+        working-directory: ./frontend
+        run: docker build -t centre-vernet-frontend:latest .
+
+      - name: Mettre a jour le conteneur
+        run: |
+          docker stop centre-vernet-ui || true
+          docker rm centre-vernet-ui || true
+          docker run -d --name centre-vernet-ui --restart=always -p 8081:80 centre-vernet-frontend:latest
